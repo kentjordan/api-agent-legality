@@ -1,4 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
@@ -7,8 +7,19 @@ def contexualize_history(llm):
     def inner(input=None) -> str:
         chat_history = input["chat_history"]
 
-        if chat_history and len(chat_history) <= 1:
-            return input["client_prompt"]
+        if len(chat_history) <= 1:
+            return ChatPromptTemplate.from_messages(
+                [(
+                        "system",
+                        (
+                            "If the prompt is a question, then please paraphrase it in 5 different versions using legal words, terminology and concepts."
+                            "Ensure that the essence of the original inquiry is preserved while enhancing the formal tone appropriate for a legal context."
+                            "If the prompt is not a question, just return it as it is."
+                        ),
+                ),
+                ("system", f'Prompt: {input["client_prompt"]}')
+                ]
+            ) | llm | StrOutputParser()
 
         return (
             ChatPromptTemplate.from_messages(
@@ -16,8 +27,9 @@ def contexualize_history(llm):
                     (
                         "system",
                         (
-                            "Please paraphrase the following question from the chat history using legal terminology and concepts."
+                            "Please paraphrase the following questions in 10 different versions from the chat history using legal words, terminology and concepts."
                             "Ensure that the essence of the original inquiry is preserved while enhancing the formal tone appropriate for a legal context."
+                            "If the prompt is not a question, just return it as it is."
                         ),
                     ),
                     ("system", "Chat History:"),
