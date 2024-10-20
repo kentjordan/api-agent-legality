@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,7 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from dto.Chat import Chat
 
 from chat.service import chat_fn
-
 
 server = FastAPI()
 
@@ -16,7 +20,6 @@ server.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @server.get("/")
 def root():

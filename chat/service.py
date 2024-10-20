@@ -7,11 +7,15 @@ from store import load_vector_store
 
 from langchain_core.messages import HumanMessage, BaseMessageChunk
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import ChatOllama
+from langchain_together import ChatTogether
 
 from dto import Chat
 
-llm = ChatOllama(model="gemma2:9b")
+import os
+
+API_KEY = os.getenv("TOGETHER_API_KEY")
+
+llm = ChatTogether(model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo", api_key=API_KEY)
 
 chat_history = []
 
